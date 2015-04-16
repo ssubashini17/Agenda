@@ -37,7 +37,7 @@ public class AgendaToday {
 	/**
 	 * Method handling HTTP GET requests. The returned object will be sent to
 	 * the client as "text/plain" media type.
-	 * 
+	 *
 	 * @return String that will be returned as a text/plain response.
 	 */
 
@@ -51,8 +51,8 @@ public class AgendaToday {
 						new Date(), TimeZone.getDefault());
 				httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-				CalendarAuthenticator authenticator = new CalendarAuthenticator();
-				GoogleCredential credential = authenticator.getCredential();
+				CredentialsProvider provider = new CredentialsProvider();
+				GoogleCredential credential = provider.getCredential();
 
 				credential.refreshToken();
 

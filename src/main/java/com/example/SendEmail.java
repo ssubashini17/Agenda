@@ -2,6 +2,8 @@ package com.example;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
@@ -11,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -25,7 +28,6 @@ import com.google.api.services.gmail.model.Message;
 /**
  * Root resource (exposed at "myresource" path)
  */
-@Path("sendemail")
 public class SendEmail {
 
 	private static final String APPLICATION_NAME = "SendEmail";
@@ -39,18 +41,27 @@ public class SendEmail {
 
 	private static Gmail client;
 
-	/**
-	 * Method handling HTTP GET requests. The returned object will be sent to
-	 * the client as "text/plain" media type.
-	 *
-	 * @return String that will be returned as a text/plain response.
-	 */
+	private static String from = "subashini.echo.hack@gmail.com";
+
+	private static Map<String, String> contacts = new HashMap<>();
+
+	static {
+		contacts.put("mani", "manikandangupta.rs@gmail.com");
+	}
+
 	@POST
+	@Path("/send")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String sendMail(String from, String to, String message) {
+	public String sendMail(@QueryParam("to")String to, @QueryParam("msg")String message) {
 		String result = "";
+
+		System.out.println("Request received to send email.");
+
+		if (!contacts.containsKey(to)) return "Contact not available";
+
 		try {
 			try {
+
 				httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
 				CredentialsProvider provider = new CredentialsProvider();
@@ -61,8 +72,10 @@ public class SendEmail {
 				client = new Gmail.Builder(httpTransport, JSON_FACTORY,
 						credential).setApplicationName(APPLICATION_NAME)
 						.build();
+				System.out.println("Sending Email. Gmail client creation sucess");
 
-				sendMessage(from, createEmail(to, from, message, message));
+				sendMessage(from,
+						createEmail(contacts.get(to), from, message, message));
 
 				return "Email sent";
 
