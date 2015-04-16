@@ -3,6 +3,7 @@ package com.example;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -11,8 +12,9 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.gmail.GmailScopes;
 
-public class CalendarAuthenticator {
+public class CredentialsProvider {
 	private GoogleCredential credential;
 
 	/** Global instance of the JSON factory. */
@@ -24,7 +26,7 @@ public class CalendarAuthenticator {
 
 	private static final String FILE_NAME = "./resources/Echo Hack-2bc576fb05e1.p12";
 
-	public CalendarAuthenticator() {
+	public CredentialsProvider() {
 		setCredential();
 	}
 
@@ -37,7 +39,10 @@ public class CalendarAuthenticator {
 					.setTransport(httpTransport)
 					.setJsonFactory(JSON_FACTORY)
 					.setServiceAccountId(SERVICE_ACCOUNT_EMAIL)
-					.setServiceAccountScopes(Collections.singleton(CalendarScopes.CALENDAR))
+					.setServiceAccountScopes(
+							Collections.unmodifiableList(Arrays.asList(
+									GmailScopes.GMAIL_COMPOSE,
+									CalendarScopes.CALENDAR)))
 					.setServiceAccountPrivateKeyFromP12File(new File(FILE_NAME))
 					.build();
 
